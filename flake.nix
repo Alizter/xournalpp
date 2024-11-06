@@ -42,6 +42,8 @@
 
             packages = (with pkgs; [
                 # Extra dev packages
+                ninja
+                clang-tools
             ]);
         };
       };
