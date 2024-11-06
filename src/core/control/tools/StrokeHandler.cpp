@@ -22,7 +22,6 @@
 #include "model/Document.h"                           // for Document
 #include "model/Element.h"
 #include "model/Layer.h"                                    // for Layer
-#include "model/LineStyle.h"                                // for LineStyle
 #include "model/Stroke.h"                                   // for Stroke, STROKE_...
 #include "model/XojPage.h"                                  // for XojPage
 #include "undo/InsertUndoAction.h"                          // for InsertUndoAction
