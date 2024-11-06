@@ -55,7 +55,6 @@ void draw_path_calligraphic(cairo_t* cr, cairo_path_t* path, double angle, doubl
                     x = last_move_x;
                     y = last_move_y;
                 }
-                // printf("%g,%g to %g,%g\n", current_point_x, current_point_y, x, y);
                 cairo_move_to(cr, current_point_x + x_shift, current_point_y + y_shift);
                 cairo_line_to(cr, current_point_x - x_shift, current_point_y - y_shift);
                 cairo_line_to(cr, x - x_shift, y - y_shift);
@@ -102,44 +101,7 @@ void stroke_calligraphic(cairo_t* cr, double angle, double thickness) {
     // Now draw through the mask.
     // We used cairo_save() above. The cairo_restore() here now restores the
     // source that was set by the caller (e.g. through cairo_set_source_rgb).
-    mask = cairo_pop_group(cr);
-    cairo_restore(cr);
-    cairo_mask(cr, mask);
 
-    cairo_pattern_destroy(mask);
-    cairo_path_destroy(path);
-}
-
-void outline_calligraphic(cairo_t* cr, double angle, double thickness) {
-    cairo_pattern_t* mask;
-    cairo_path_t* path;
-
-    // Get the current path. This uses _flat so that cairo replaces
-    // cairo_curve_to() calls with many line_to()s.
-    path = cairo_copy_path_flat(cr);
-    cairo_new_path(cr);
-
-    cairo_save(cr);
-    cairo_set_source_rgb(cr, 0, 0, 0);
-    // I get antialiasing artifacts with OVER where two of the rectangles meet. ADD seems to make that problem go away.
-    cairo_set_operator(cr, CAIRO_OPERATOR_ADD);
-
-    // Redirect drawing to a temporary surface that we use to prepare the path.
-    // This surface only has an alpha channel. It starts all transparent. The code
-    // below draws to it, making it opaque where needed.
-    cairo_push_group_with_content(cr, CAIRO_CONTENT_ALPHA);
-
-    // Draw the outline (false -> stroke). This also draws some "interior lines" in
-    // the middle of the shape.
-    draw_path_calligraphic(cr, path, angle, thickness, false);
-
-    // Fill the middle of the shape with transparency, removing these artifacts.
-    cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
-    draw_path_calligraphic(cr, path, angle, thickness, true);
-
-    // Now draw through the mask.
-    // We used cairo_save() above. The cairo_restore() here now restores the
-    // source that was set by the caller (e.g. through cairo_set_source_rgb).
     mask = cairo_pop_group(cr);
     cairo_restore(cr);
     cairo_mask(cr, mask);
@@ -149,8 +111,8 @@ void outline_calligraphic(cairo_t* cr, double angle, double thickness) {
 }
 
 const double angle = M_PI / 8;
-const double max_nib_thickness = 1.5;
-const double min_nib_thickness = 1.0;
+const double max_nib_thickness = 1.0;
+const double min_nib_thickness = 0.2;
 
 /**
  * Draw a stroke with pressure, for this multiple lines with different widths needs to be drawn
